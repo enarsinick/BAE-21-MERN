@@ -9,8 +9,42 @@ const server = require("../index.js");
 // (rather than a different framework)
 chai.use(chaiHttp);
 
-// Test get test route
-describe("Test the get route", function () {
+describe("Setup basic tests", function () {
+    // Setup a test id to use
+    let testId = null;
+
+    // Setup envirboment
+    before(function (done) {
+        console.log("Setup of test environment");
+        // Generate a new game object
+        const game = new Game({
+            title: "Call of Duty",
+            price: 2.99,
+            developer: "Infinity Ward",
+            publisher: "Fuck Knows",
+            releaseYear: 2021,
+            category: [
+                {
+                    nameOfCategory: "FPS",
+                    isCool: true,
+                },
+            ],
+            platform: ["Xbox", "PC"],
+        });
+        // Saving game to DB
+        game.save().then((result) => {
+            // Saving ID of new game to the global ID variable
+            // ready for testing
+            testId = result._id.toString();
+            done();
+        });
+    });
+
+    after(function (done) {
+        console.log("Closing down test environment");
+        Game.deleteMany({}).then(() => done());
+    });
+
     const testGame = {
         title: "Halo Infinite",
         price: 29.99,
@@ -26,40 +60,22 @@ describe("Test the get route", function () {
         platform: ["Xbox", "PC"],
     };
 
-    let testId = null;
-
-    before(function () {
-        const game = new Game({
-            title: "Test Gamee",
-            price: 1.99,
-            developer: "Bungie",
-        });
-        game.save();
-        Game.findOne({ title: "Test Gamee" }, function (err, obj) {
-            console.log(obj._id);
-        });
-    });
-
     // Test Get Route
-    // it("should respond with 201 and 'Test path successful'", function (done) {
-    //     // Arrange
-    //     chai.request(server)
-    //         .get("/games/test")
-    //         .end((err, res) => {
-    //             if (err) {
-    //                 console.log("Error occured");
-    //                 done(err);
-    //             }
-    //             expect(err).to.be.null;
-    //             expect(res).to.have.status(201);
-    //             expect(res).to.have.property("text", "Test path successful");
-    //             done();
-    //         });
-
-    //     // Act
-
-    //     // Assert
-    // });
+    it("should respond with 201 and 'Test path successful'", function (done) {
+        // Arrange
+        chai.request(server)
+            .get("/games/test")
+            .end((err, res) => {
+                if (err) {
+                    console.log("Error occured");
+                    done(err);
+                }
+                expect(err).to.be.null;
+                expect(res).to.have.status(201);
+                expect(res).to.have.property("text", "Test path successful");
+                done();
+            });
+    });
 
     // Test post route
     // it("should post to db and return <name> added to the database...", function (done) {
@@ -111,19 +127,19 @@ describe("Test the get route", function () {
     // });
 
     // Test the delete route
-    it("should delete a game from the database", function (done) {
-        chai.request(server)
-            .delete(`/games/delete/`)
-            .end((err, res) => {
-                if (err) {
-                    console.log("Error occured: ", err);
-                    done(err);
-                }
-                expect(res).to.not.be.null;
-                expect(res).to.have.status(204);
-                done();
-            });
-    });
+    // it("should delete a game from the database", function (done) {
+    //     chai.request(server)
+    //         .delete(`/games/delete/`)
+    //         .end((err, res) => {
+    //             if (err) {
+    //                 console.log("Error occured: ", err);
+    //                 done(err);
+    //             }
+    //             expect(res).to.not.be.null;
+    //             expect(res).to.have.status(204);
+    //             done();
+    //         });
+    // });
 
     // Test update of a game
     // it("should update a game in the database", function (done) {

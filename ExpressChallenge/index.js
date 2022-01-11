@@ -28,8 +28,12 @@ app.use((req, res, next) => {
 });
 
 // --------- Database Connection --------- //
+
+let dbURI = "games_shop";
+let testDbURI = "test_games_shop";
+
 mongoose.connect(
-    "mongodb://localhost:27017/games_shop",
+    `mongodb://localhost:27017/${testDbURI}`,
     { useNewUrlParser: true },
     (error) => {
         error
